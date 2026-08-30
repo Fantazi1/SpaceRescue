@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public interface IInteractable
 {
     void Interact();
+    string GetInteractText();
 }
 
 public class PlayerInteractor : MonoBehaviour
@@ -14,6 +16,7 @@ public class PlayerInteractor : MonoBehaviour
 
     [Header("UI Підказка")]
     public GameObject promptUI;
+    public TMP_Text promptText;
 
     void Start()
     {
@@ -28,11 +31,32 @@ public class PlayerInteractor : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
         {
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+            ShipReturnTerminal returnTerminal = hit.collider.GetComponent<ShipReturnTerminal>();
+            if (returnTerminal != null)
+            {
+                if (promptUI != null) promptUI.SetActive(true);
 
+                if (promptText != null)
+                {
+                    promptText.text = returnTerminal.promptMessage;
+                }
+
+                if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+                {
+                    returnTerminal.Interact();
+                }
+                return;
+            }
+
+            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
             if (interactable != null)
             {
                 if (promptUI != null) promptUI.SetActive(true);
+
+                if (promptText != null)
+                {
+                    promptText.text = interactable.GetInteractText();
+                }
 
                 if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
                 {
@@ -41,12 +65,17 @@ public class PlayerInteractor : MonoBehaviour
             }
             else
             {
-                if (promptUI != null) promptUI.SetActive(false);
+                HidePrompt();
             }
         }
         else
         {
-            if (promptUI != null) promptUI.SetActive(false);
+            HidePrompt();
         }
+    }
+
+    private void HidePrompt()
+    {
+        if (promptUI != null) promptUI.SetActive(false);
     }
 }

@@ -1,8 +1,12 @@
 using System.Collections;
 using UnityEngine;
+using TMPro;
 
 public class ShipReturnTerminal : MonoBehaviour, IInteractable
 {
+    [Header("Текст підказки")]
+    public string promptMessage = "Повернутися на корабель";
+
     [Header("Куди телепортувати (Всередину корабля)")]
     public Transform shipSpawnPoint;
 
@@ -13,20 +17,31 @@ public class ShipReturnTerminal : MonoBehaviour, IInteractable
 
     private static bool isTeleporting = false;
 
+    public string GetInteractText()
+    {
+        PlayerInteractor interactor = Object.FindFirstObjectByType<PlayerInteractor>();
+        if (interactor != null)
+        {
+            System.Reflection.FieldInfo field = typeof(PlayerInteractor).GetField("promptText");
+            if (field != null)
+            {
+                TMP_Text t = field.GetValue(interactor) as TMP_Text;
+                if (t != null) t.text = promptMessage;
+            }
+        }
+
+        return promptMessage;
+    }
+
     public void Interact()
     {
         if (isTeleporting) return;
 
-        PlayerInteractor player = Object.FindFirstObjectByType<PlayerInteractor>();
-        if (player != null)
+        CharacterController cc = Object.FindFirstObjectByType<CharacterController>();
+        if (cc != null)
         {
-            CharacterController cc = player.GetComponent<CharacterController>();
-            AstronautMovement movement = player.GetComponent<AstronautMovement>();
-
-            if (cc != null)
-            {
-                StartCoroutine(TeleportSequence(cc, movement));
-            }
+            AstronautMovement movement = cc.GetComponent<AstronautMovement>();
+            StartCoroutine(TeleportSequence(cc, movement));
         }
     }
 
