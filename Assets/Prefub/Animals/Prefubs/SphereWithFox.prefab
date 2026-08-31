@@ -145,6 +145,16 @@ MonoBehaviour:
   promptMessage: '[E] Save animal'
   isValuableAsteroid: 0
   rewardAmount: 0
+  pickupSounds:
+  - {fileID: 8300000, guid: 2f7de3af6511159418bfe1b2a2bc3cce, type: 3}
+  - {fileID: 8300000, guid: 8144908bb96447e40bf32604e5cda448, type: 3}
+  - {fileID: 8300000, guid: 89fd848cbc54a744489475466636c20c, type: 3}
+  - {fileID: 8300000, guid: 83a1e446752de174f908727a3dce1aac, type: 3}
+  outputAudioGroup: {fileID: 257194766299480884, guid: deed26161c01c1f4fa8dbe80296abaeb, type: 2}
+  soundVolume: 1
+  floatingTextPrefab: {fileID: 2509971086971990082, guid: 0f545449c9bc8354d931106ae7629932, type: 3}
+  asteroidTextColor: {r: 0.12941177, g: 0.81960785, b: 0.19215687, a: 1}
+  animalTextColor: {r: 0, g: 0.7019608, b: 1, a: 1}
 --- !u!1001 &599532082115395092
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -3,9 +3,15 @@ using UnityEngine;
 public class EarthRotation : MonoBehaviour
 {
     public float rotationSpeed = 1.0f;
+    private Transform myTransform;
 
-    void Update()
+    void Start()
     {
-        transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime);
+        myTransform = transform;
+    }
+
+    void FixedUpdate()
+    {
+        myTransform.Rotate(Vector3.up * rotationSpeed * Time.fixedDeltaTime);
     }
 }

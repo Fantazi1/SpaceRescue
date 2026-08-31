@@ -144,3 +144,14 @@ MonoBehaviour:
   promptMessage: '[E] Collect valuable'
   isValuableAsteroid: 1
   rewardAmount: 10
+  pickupSounds:
+  - {fileID: 8300000, guid: 0bbd673ff2b6a914cb5bdeded7aedc69, type: 3}
+  - {fileID: 8300000, guid: f74ea17d0fa47194f8378c788f80a9bd, type: 3}
+  - {fileID: 8300000, guid: 3faa4180a0c4f9b4b8af3d66731426c1, type: 3}
+  - {fileID: 8300000, guid: 2fec97a3931c15d4fa5f7119cb41c913, type: 3}
+  - {fileID: 8300000, guid: e1f55acceac5ef54ab833ce4d60c666c, type: 3}
+  outputAudioGroup: {fileID: 257194766299480884, guid: deed26161c01c1f4fa8dbe80296abaeb, type: 2}
+  soundVolume: 1
+  floatingTextPrefab: {fileID: 2509971086971990082, guid: 0f545449c9bc8354d931106ae7629932, type: 3}
+  asteroidTextColor: {r: 0.127759, g: 0.8207547, b: 0.19051336, a: 1}
+  animalTextColor: {r: 0, g: 0.70004034, b: 1, a: 1}

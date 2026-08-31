@@ -21,6 +21,10 @@ public class AstronautEffects : MonoBehaviour
     public AudioSource breathingSource;
     public AudioClip[] breathingSounds;
 
+    [Range(0f, 1f)]
+    [Tooltip("Додатковий модифікатор гучності для дихання (0 - тихо, 1 - максимум від SFX міксера)")]
+    public float breathingVolumeMultiplier = 0.5f;
+
     private float defaultPosY = 0f;
     private float timer = 0f;
     private float footstepTimer = 0f;
@@ -99,10 +103,12 @@ public class AstronautEffects : MonoBehaviour
     {
         if (breathingSource != null && breathingSounds.Length > 0)
         {
+            breathingSource.volume = breathingVolumeMultiplier;
+
             if (!breathingSource.isPlaying)
             {
                 int rand = Random.Range(0, breathingSounds.Length);
-                breathingSource.clip = breathingSounds[rand];
+                breathingSource.clip = breathingSounds[rand]; 
                 breathingSource.Play();
             }
         }

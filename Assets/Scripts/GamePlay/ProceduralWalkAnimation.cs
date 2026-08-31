@@ -20,6 +20,13 @@ public class ProceduralWalk : MonoBehaviour
     public float idleSpeed = 2f;
     public float idleArmAngle = 5f;
 
+    [Header("Налаштування невагомості (Zero-G)")]
+    public float zeroGAnimSpeed = 1f;
+    public float zeroGArmSwayAngle = 10f;
+    public float zeroGLegSwayAngle = 5f;
+    public Vector3 zeroGArmOffset = new Vector3(0, 0, 20f);
+    public Vector3 zeroGLegOffset = new Vector3(15f, 0, 0);
+
     [Header("Осі обертання")]
     public Vector3 armSwingAxis = new Vector3(1f, 0, 0);
     public Vector3 legSwingAxis = new Vector3(1f, 0, 0);
@@ -70,11 +77,22 @@ public class ProceduralWalk : MonoBehaviour
 
         if (isZeroG)
         {
-            float lerpSpeed = Time.deltaTime * 5f;
-            if (leftLeg) leftLeg.localRotation = Quaternion.Lerp(leftLeg.localRotation, startLeftLeg, lerpSpeed);
-            if (rightLeg) rightLeg.localRotation = Quaternion.Lerp(rightLeg.localRotation, startRightLeg, lerpSpeed);
-            if (leftArm) leftArm.localRotation = Quaternion.Lerp(leftArm.localRotation, startLeftArm, lerpSpeed);
-            if (rightArm) rightArm.localRotation = Quaternion.Lerp(rightArm.localRotation, startRightArm, lerpSpeed);
+            animTime += Time.deltaTime * zeroGAnimSpeed;
+
+            float armSway = Mathf.Sin(animTime) * zeroGArmSwayAngle;
+            float legSway = Mathf.Cos(animTime * 0.8f) * zeroGLegSwayAngle;
+
+            Quaternion targetLeftArm = startLeftArm * Quaternion.Euler(zeroGArmOffset.x + armSway, zeroGArmOffset.y, zeroGArmOffset.z);
+            Quaternion targetRightArm = startRightArm * Quaternion.Euler(zeroGArmOffset.x - armSway, zeroGArmOffset.y, -zeroGArmOffset.z);
+
+            Quaternion targetLeftLeg = startLeftLeg * Quaternion.Euler(zeroGLegOffset.x + legSway, zeroGLegOffset.y, zeroGLegOffset.z);
+            Quaternion targetRightLeg = startRightLeg * Quaternion.Euler(zeroGLegOffset.x - legSway, zeroGLegOffset.y, zeroGLegOffset.z);
+
+            float lerpSpeed = Time.deltaTime * 3f;
+            if (leftLeg) leftLeg.localRotation = Quaternion.Lerp(leftLeg.localRotation, targetLeftLeg, lerpSpeed);
+            if (rightLeg) rightLeg.localRotation = Quaternion.Lerp(rightLeg.localRotation, targetRightLeg, lerpSpeed);
+            if (leftArm) leftArm.localRotation = Quaternion.Lerp(leftArm.localRotation, targetLeftArm, lerpSpeed);
+            if (rightArm) rightArm.localRotation = Quaternion.Lerp(rightArm.localRotation, targetRightArm, lerpSpeed);
         }
         else if (currentSpeed > 0.1f)
         {

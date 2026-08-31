@@ -51,11 +51,6 @@ public class SpaceExitTrigger : MonoBehaviour
             movement.velocity = Vector3.zero;
         }
 
-        ProceduralWalk procWalk = player.GetComponent<ProceduralWalk>();
-        if (procWalk != null)
-        {
-            procWalk.enabled = false;
-        }
 
         player.enabled = true;
 

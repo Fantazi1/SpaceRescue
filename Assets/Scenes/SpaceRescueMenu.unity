@@ -39897,7 +39897,7 @@ MonoBehaviour:
   menuParticles:
   - {fileID: 148026262}
   - {fileID: 1007888198}
-  targetParticleColor: {r: 0.02403856, g: 0.8396226, b: 0, a: 1}
+  targetParticleColor: {r: 1, g: 0.35601696, b: 0, a: 1}
   particleSpeedMultiplier: 4
   particleEmissionMultiplier: 3
   shipTransform: {fileID: 1297479050}

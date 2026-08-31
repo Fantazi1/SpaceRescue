@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 6108880269311846544}
   - component: {fileID: 5714728002585003008}
   - component: {fileID: 5365023070020942072}
-  - component: {fileID: -9124286473141542404}
   - component: {fileID: 6184593467395067527}
+  - component: {fileID: -9124286473141542404}
   - component: {fileID: -9003276316789314400}
   m_Layer: 0
   m_Name: RareAnimal
@@ -93,6 +93,21 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6184593467395067527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5958493694454660800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b49b4888f2156545a972353aec6bc77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpaceCollectible
+  objectType: 2
+  minSpeed: 0.5
+  maxSpeed: 1
 --- !u!135 &-9124286473141542404
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -110,25 +125,10 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Radius: 4.4570975
   m_Center: {x: 0, y: 0.0000004768373, z: 0}
---- !u!114 &6184593467395067527
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5958493694454660800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b49b4888f2156545a972353aec6bc77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpaceCollectible
-  objectType: 2
-  minSpeed: 0.5
-  maxSpeed: 1
 --- !u!114 &-9003276316789314400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,4 +142,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpaceInteractableItem
   promptMessage: '[E] Save animal'
-  isValuableAsteroid: 1
+  isValuableAsteroid: 0
+  rewardAmount: 0
+  pickupSounds:
+  - {fileID: 8300000, guid: 2f7de3af6511159418bfe1b2a2bc3cce, type: 3}
+  - {fileID: 8300000, guid: 8144908bb96447e40bf32604e5cda448, type: 3}
+  - {fileID: 8300000, guid: 89fd848cbc54a744489475466636c20c, type: 3}
+  - {fileID: 8300000, guid: 83a1e446752de174f908727a3dce1aac, type: 3}
+  outputAudioGroup: {fileID: 257194766299480884, guid: deed26161c01c1f4fa8dbe80296abaeb, type: 2}
+  soundVolume: 1
+  floatingTextPrefab: {fileID: 2509971086971990082, guid: 0f545449c9bc8354d931106ae7629932, type: 3}
+  asteroidTextColor: {r: 0.12941177, g: 0.81960785, b: 0.19215687, a: 1}
+  animalTextColor: {r: 0, g: 0.7019608, b: 1, a: 1}
