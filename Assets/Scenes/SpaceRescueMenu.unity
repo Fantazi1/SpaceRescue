@@ -10161,7 +10161,7 @@ GameObject:
   - component: {fileID: 148026262}
   - component: {fileID: 148026261}
   m_Layer: 0
-  m_Name: Particles
+  m_Name: ParticlesTurbine1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39894,6 +39894,16 @@ MonoBehaviour:
   menuCamera: {fileID: 1605236951}
   mechanicAstronaut: {fileID: 1156240975}
   goodbyeAstronaut: {fileID: 2049734196}
+  menuParticles:
+  - {fileID: 148026262}
+  - {fileID: 1007888198}
+  targetParticleColor: {r: 0.02403856, g: 0.8396226, b: 0, a: 1}
+  particleSpeedMultiplier: 4
+  particleEmissionMultiplier: 3
+  shipTransform: {fileID: 1297479050}
+  forwardDistance: 500
+  startTransitionDuration: 3
+  flightDirection: {x: 1, y: 0, z: 0}
   mainMenuPanel: {fileID: 251720094}
   settingsPanel: {fileID: 1528095812}
   playButton: {fileID: 1151177429}
@@ -73025,7 +73035,7 @@ GameObject:
   - component: {fileID: 1007888198}
   - component: {fileID: 1007888197}
   m_Layer: 0
-  m_Name: Particles (1)
+  m_Name: ParticlesTurbine2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

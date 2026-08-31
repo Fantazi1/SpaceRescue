@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SpaceDoor : MonoBehaviour
+public class SpaceDoorCommon : MonoBehaviour
 {
     [Header("Частини дверей")]
     public Transform leftDoorPart;
@@ -11,9 +11,9 @@ public class SpaceDoor : MonoBehaviour
     public float openSpeed = 2f;
 
     [Header("Звуки")]
-    public AudioSource audioSource;
-    public AudioClip openSound;
-    public AudioClip closeSound;
+    public AudioSource audioSource;    
+    public AudioClip openSound;      
+    public AudioClip closeSound;     
 
     private Vector3 leftClosedPos;
     private Vector3 rightClosedPos;
@@ -21,8 +21,7 @@ public class SpaceDoor : MonoBehaviour
     private Vector3 rightOpenPos;
 
     private bool isOpen = false;
-    private bool isMoving = false;
-    private Vector3 lastLeftPos;
+    private bool previousIsOpenState = false; 
 
     void Start()
     {
@@ -30,7 +29,6 @@ public class SpaceDoor : MonoBehaviour
         {
             leftClosedPos = leftDoorPart.localPosition;
             leftOpenPos = leftClosedPos + new Vector3(-openDistance, 0, 0);
-            lastLeftPos = leftDoorPart.localPosition;
         }
 
         if (rightDoorPart != null)
@@ -50,7 +48,7 @@ public class SpaceDoor : MonoBehaviour
         if (!isOpen)
         {
             isOpen = true;
-            PlayDoorSound(openSound);
+            PlaySound(openSound);
         }
     }
 
@@ -59,47 +57,30 @@ public class SpaceDoor : MonoBehaviour
         if (isOpen)
         {
             isOpen = false;
-            PlayDoorSound(closeSound);
+            PlaySound(closeSound);
         }
     }
 
-    private void PlayDoorSound(AudioClip clip)
+    private void PlaySound(AudioClip clip)
     {
         if (audioSource != null && clip != null)
         {
-            audioSource.Stop();
-            audioSource.clip = clip;
-
-            audioSource.Play();
+            audioSource.PlayOneShot(clip);
         }
     }
 
     void Update()
     {
-        if (leftDoorPart == null) return;
-
-        Vector3 targetLeft = isOpen ? leftOpenPos : leftClosedPos;
-
-        float distanceBefore = Vector3.Distance(leftDoorPart.localPosition, targetLeft);
-
-        leftDoorPart.localPosition = Vector3.MoveTowards(leftDoorPart.localPosition, targetLeft, openSpeed * Time.deltaTime);
+        if (leftDoorPart != null)
+        {
+            Vector3 targetLeft = isOpen ? leftOpenPos : leftClosedPos;
+            leftDoorPart.localPosition = Vector3.MoveTowards(leftDoorPart.localPosition, targetLeft, openSpeed * Time.deltaTime);
+        }
 
         if (rightDoorPart != null)
         {
             Vector3 targetRight = isOpen ? rightOpenPos : rightClosedPos;
             rightDoorPart.localPosition = Vector3.MoveTowards(rightDoorPart.localPosition, targetRight, openSpeed * Time.deltaTime);
-        }
-
-        float distanceAfter = Vector3.Distance(leftDoorPart.localPosition, targetLeft);
-
-        if (distanceAfter <= 0.001f && audioSource.isPlaying && isMoving)
-        {
-            isMoving = false;
-            audioSource.Stop();
-        }
-        else if (distanceAfter > 0.001f && distanceBefore != distanceAfter)
-        {
-            isMoving = true;
         }
     }
 }

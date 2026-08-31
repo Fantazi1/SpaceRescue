@@ -1,11 +1,17 @@
 using UnityEngine;
+using UnityEngine.UI; 
 
 public class SpaceBounds : MonoBehaviour
 {
     [Header("Центр та налаштування")]
     public Transform centerPoint;
     public float maxDistance = 50f;
-    public float slowDownZone = 5f; 
+    public float slowDownZone = 5f;
+
+    [Header("Ефект меж (Віньєтка)")]
+    public Image vignetteImage;          
+    public Color vignetteColor = new Color(0f, 0.5f, 1f); 
+    public float maxVignetteAlpha = 0.8f;
 
     [Header("Посилання")]
     public AstronautMovement astronautMovement;
@@ -25,6 +31,13 @@ public class SpaceBounds : MonoBehaviour
                 centerPoint = shipTerminal.transform;
             }
         }
+
+        if (vignetteImage != null)
+        {
+            Color c = vignetteColor;
+            c.a = 0f;
+            vignetteImage.color = c;
+        }
     }
 
     void Update()
@@ -34,6 +47,8 @@ public class SpaceBounds : MonoBehaviour
 
         Vector3 direction = transform.position - centerPoint.position;
         float distance = direction.magnitude;
+
+        UpdateVignette(distance);
 
         if (distance >= maxDistance - slowDownZone)
         {
@@ -46,6 +61,31 @@ public class SpaceBounds : MonoBehaviour
             if (distance > maxDistance)
             {
                 transform.position = centerPoint.position + direction.normalized * maxDistance;
+            }
+        }
+    }
+
+    private void UpdateVignette(float distance)
+    {
+        if (vignetteImage == null) return;
+
+        float startZone = maxDistance - slowDownZone;
+
+        if (distance >= startZone)
+        {
+            float t = Mathf.Clamp01((distance - startZone) / slowDownZone);
+
+            Color c = vignetteColor;
+            c.a = Mathf.Lerp(0f, maxVignetteAlpha, t);
+            vignetteImage.color = c;
+        }
+        else
+        {
+            if (vignetteImage.color.a > 0f)
+            {
+                Color c = vignetteColor;
+                c.a = 0f;
+                vignetteImage.color = c;
             }
         }
     }
