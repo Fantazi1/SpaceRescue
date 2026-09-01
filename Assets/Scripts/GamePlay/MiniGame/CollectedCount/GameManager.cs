@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // Додано для обробки ESC
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public int zoneLevel = 1;
     public int speedLevel = 1;
     public int luckLevel = 1;
+    public int spawnRateLevel = 1;
 
     [Header("Налаштування цін")]
     public int baseUpgradeCost = 200;

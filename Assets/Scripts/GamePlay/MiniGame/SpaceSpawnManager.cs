@@ -7,20 +7,40 @@ public class SpaceSpawnManager : MonoBehaviour
     public GameObject normalAsteroidPrefab;
     public GameObject valuableAsteroidPrefab;
 
-    [Header("Масив рідкісних тваринок (можна додати скільки завгодно)")]
+    [Header("Масив рідкісних тваринок")]
     public GameObject[] rareAnimalPrefabs;
 
-    [Header("Налаштування спавну")]
+    [Header("Налаштування спавну та інтервалу")]
     public Transform playerTransform;
     public AstronautMovement astronautMovement;
+    public UpgradeMenuController upgradeMenu;
     public float spawnRadius = 30f;
     public float minSpawnDistance = 12f;
-    public float spawnInterval = 2f;
 
-    [Header("Шанси спавну (у відсотках)")]
-    [Range(0f, 100f)] public float normalAsteroidChance = 60f;
-    [Range(0f, 100f)] public float valuableAsteroidChance = 30f;
-    [Range(0f, 100f)] public float rareAnimalChance = 10f;
+    [Header("Налаштування часу спавну (Баланс)")]
+    [Tooltip("Базовий інтервал між спавнами на 1 рівні (в секундах)")]
+    public float baseSpawnInterval = 2f;
+    [Tooltip("Скільки секунд віднімається від інтервалу за кожний новий рівень")]
+    public float intervalReductionPerLevel = 0.2f;
+    [Tooltip("Мінімально можливий інтервал (нижче цієї межі час спавну не впаде ніколи)")]
+    public float minAllowedInterval = 0.5f;
+
+    [Header("Базові шанси спавну (на 1 рівні удачі)")]
+    [Range(0f, 100f)] public float baseNormalChance = 60f;
+    [Range(0f, 100f)] public float baseValuableChance = 30f;
+    [Range(0f, 100f)] public float baseRareChance = 10f;
+
+    [Header("Бонус від прокачки удачі")]
+    [Tooltip("Скільки відсотків додається до цінних речей/тваринок за кожний новий рівень удачі")]
+    public float luckBonusMultiplier = 1.5f;
+
+    [Header("Обмеження шансів (Баланс в Inspector)")]
+    [Tooltip("Максимально можливий шанс цінних астероїдів при прокачці")]
+    public float maxValuableChanceLimit = 60f;
+    [Tooltip("Максимально можливий шанс рідкісних тваринок при прокачці")]
+    public float maxRareChanceLimit = 30f;
+    [Tooltip("Мінімально можливий шанс звичайних астероїдів (щоб вони повністю не зникали)")]
+    public float minNormalChanceLimit = 10f;
 
     [Header("Розмір: Звичайні астероїди")]
     public float normalMinSize = 1f;
@@ -36,6 +56,16 @@ public class SpaceSpawnManager : MonoBehaviour
 
     private float timer;
 
+    private float CurrentSpawnInterval
+    {
+        get
+        {
+            int spawnLevel = (GameManager.Instance != null) ? GameManager.Instance.spawnRateLevel : 1;
+            float calculatedInterval = baseSpawnInterval - ((spawnLevel - 1) * intervalReductionPerLevel);
+            return Mathf.Max(calculatedInterval, minAllowedInterval);
+        }
+    }
+
     void Start()
     {
         if (playerTransform == null)
@@ -50,6 +80,11 @@ public class SpaceSpawnManager : MonoBehaviour
                 }
             }
         }
+
+        if (upgradeMenu == null)
+        {
+            upgradeMenu = Object.FindFirstObjectByType<UpgradeMenuController>();
+        }
     }
 
     void Update()
@@ -61,7 +96,7 @@ public class SpaceSpawnManager : MonoBehaviour
         }
 
         timer += Time.deltaTime;
-        if (timer >= spawnInterval)
+        if (timer >= CurrentSpawnInterval)
         {
             timer = 0f;
             StartCoroutine(SpawnRoutine());
@@ -76,19 +111,26 @@ public class SpaceSpawnManager : MonoBehaviour
         float randomDistance = Random.Range(minSpawnDistance, spawnRadius);
         Vector3 spawnPosition = playerTransform.position + randomDirection * randomDistance;
 
-        float totalWeight = normalAsteroidChance + valuableAsteroidChance + rareAnimalChance;
+        int luckLevel = (GameManager.Instance != null) ? GameManager.Instance.luckLevel : 1;
+        float bonus = (luckLevel - 1) * luckBonusMultiplier;
+
+        float currentValuableChance = Mathf.Min(baseValuableChance + bonus, maxValuableChanceLimit);
+        float currentRareChance = Mathf.Min(baseRareChance + (bonus * 0.5f), maxRareChanceLimit);
+        float currentNormalChance = Mathf.Max(100f - currentValuableChance - currentRareChance, minNormalChanceLimit);
+
+        float totalWeight = currentNormalChance + currentValuableChance + currentRareChance;
         float roll = Random.Range(0f, totalWeight);
 
         GameObject prefabToSpawn = null;
         float targetMinSize = 1f, targetMaxSize = 1.5f;
 
-        if (roll < normalAsteroidChance)
+        if (roll < currentNormalChance)
         {
             prefabToSpawn = normalAsteroidPrefab;
             targetMinSize = normalMinSize;
             targetMaxSize = normalMaxSize;
         }
-        else if (roll < normalAsteroidChance + valuableAsteroidChance)
+        else if (roll < currentNormalChance + currentValuableChance)
         {
             prefabToSpawn = valuableAsteroidPrefab;
             targetMinSize = valuableMinSize;

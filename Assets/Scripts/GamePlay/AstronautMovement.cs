@@ -16,6 +16,9 @@ public class AstronautMovement : MonoBehaviour
     public float mouseSensitivity = 0.1f;
     public float maxLookAngle = 80f;
 
+    [Header("Посилання на прокачку")]
+    public UpgradeMenuController upgradeMenu;
+
     public Vector3 velocity;
     private CharacterController controller;
     private float cameraRotationX = 0f;
@@ -25,6 +28,11 @@ public class AstronautMovement : MonoBehaviour
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (upgradeMenu == null)
+        {
+            upgradeMenu = Object.FindFirstObjectByType<UpgradeMenuController>();
+        }
     }
 
     void Update()
@@ -68,8 +76,10 @@ public class AstronautMovement : MonoBehaviour
 
         if (isZeroGravity)
         {
+            float currentFlightSpeed = (upgradeMenu != null) ? upgradeMenu.GetCurrentSpeed() : walkSpeed;
+
             Vector3 move = playerCamera.right * inputDir.x + playerCamera.forward * inputDir.z;
-            controller.Move(move * walkSpeed * Time.deltaTime);
+            controller.Move(move * currentFlightSpeed * Time.deltaTime);
 
             velocity = Vector3.zero;
         }

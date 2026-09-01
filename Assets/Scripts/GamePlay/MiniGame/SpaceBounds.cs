@@ -10,6 +10,8 @@ public class SpaceBounds : MonoBehaviour
     public float slowDownZone = 5f;
 
     [Header("Візуальна куля")]
+    [Tooltip("Увімкнути/вимкнути відображення візуальної сфери межі")]
+    public bool isVisualEnabled = true;
     public Color sphereColor = new Color(0f, 0.6f, 1f, 0.08f);
 
     [Header("Ефект меж (Віньєтка)")]
@@ -23,10 +25,19 @@ public class SpaceBounds : MonoBehaviour
     private GameObject boundarySphere;
     private Material sphereMaterial;
     private int lastZoneLevel = -1;
+    private bool lastVisualState = true;
 
-    private float CurrentMaxDistance => GameManager.Instance != null
-        ? baseMaxDistance + ((GameManager.Instance.zoneLevel - 1) * upgradeDistanceStep)
-        : baseMaxDistance;
+    private float CurrentMaxDistance
+    {
+        get
+        {
+            if (GameManager.Instance != null)
+            {
+                return baseMaxDistance + ((GameManager.Instance.zoneLevel - 1) * upgradeDistanceStep);
+            }
+            return baseMaxDistance;
+        }
+    }
 
     void Start()
     {
@@ -56,6 +67,12 @@ public class SpaceBounds : MonoBehaviour
 
     void Update()
     {
+        if (boundarySphere != null && lastVisualState != isVisualEnabled)
+        {
+            lastVisualState = isVisualEnabled;
+            boundarySphere.SetActive(isVisualEnabled);
+        }
+
         if (centerPoint != null && boundarySphere != null)
         {
             boundarySphere.transform.position = centerPoint.position;
@@ -68,16 +85,19 @@ public class SpaceBounds : MonoBehaviour
                 boundarySphere.transform.localScale = new Vector3(diameter, diameter, diameter);
             }
         }
+    }
 
+    void LateUpdate()
+    {
         if (astronautMovement == null || !astronautMovement.isZeroGravity) return;
         if (centerPoint == null) return;
 
-        Vector3 direction = transform.position - centerPoint.position;
+        Vector3 centerPos = centerPoint.position;
+        Vector3 direction = transform.position - centerPos;
         float distance = direction.magnitude;
+        float maxDist = CurrentMaxDistance;
 
         UpdateVignette(distance);
-
-        float maxDist = CurrentMaxDistance;
 
         if (distance >= maxDist - slowDownZone)
         {
@@ -87,9 +107,11 @@ public class SpaceBounds : MonoBehaviour
                 astronautMovement.velocity -= outwardVelocity;
             }
 
-            if (distance > maxDist)
+            if (distance >= maxDist)
             {
-                transform.position = centerPoint.position + direction.normalized * maxDist;
+                transform.position = centerPos + direction.normalized * maxDist;
+
+                astronautMovement.velocity = Vector3.ProjectOnPlane(astronautMovement.velocity, direction.normalized);
             }
         }
     }
@@ -118,6 +140,9 @@ public class SpaceBounds : MonoBehaviour
 
         float diameter = CurrentMaxDistance * 2f;
         boundarySphere.transform.localScale = new Vector3(diameter, diameter, diameter);
+
+        boundarySphere.SetActive(isVisualEnabled);
+        lastVisualState = isVisualEnabled;
     }
 
     private void UpdateVignette(float distance)
