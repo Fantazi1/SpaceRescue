@@ -13,33 +13,26 @@ public class PauseMenuManager : MonoBehaviour
     public Button mainMenuButton;
 
     [Header("Назва сцени головного меню")]
-    public string mainMenuSceneName = "MainMenu"; 
+    public string mainMenuSceneName = "MainMenu";
+
+    [Header("Посилання на гравця")]
+    public AstronautMovement astronautMovement;
 
     private bool isPaused = false;
 
     void Start()
     {
-        if (resumeButton != null)
-        {
-            resumeButton.onClick.AddListener(ResumeGame);
-        }
-
-        if (mainMenuButton != null)
-        {
-            mainMenuButton.onClick.AddListener(GoToMainMenu);
-        }
-
-        if (pauseMenuUI != null)
-        {
-            pauseMenuUI.SetActive(false);
-        }
+        if (resumeButton != null) resumeButton.onClick.AddListener(ResumeGame);
+        if (mainMenuButton != null) mainMenuButton.onClick.AddListener(GoToMainMenu);
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
     }
 
     void Update()
     {
-        // Відстежуємо натискання Esc
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
+            if (UpgradeMenuController.IsOpen) return;
+
             if (isPaused)
             {
                 ResumeGame();
@@ -53,30 +46,28 @@ public class PauseMenuManager : MonoBehaviour
 
     public void ResumeGame()
     {
-        if (pauseMenuUI != null)
-        {
-            pauseMenuUI.SetActive(false);
-        }
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
 
-        Time.timeScale = 1f; 
+        Time.timeScale = 1f;
         isPaused = false;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (astronautMovement != null) astronautMovement.enabled = true;
     }
 
     void PauseGame()
     {
-        if (pauseMenuUI != null)
-        {
-            pauseMenuUI.SetActive(true);
-        }
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(true);
 
-        Time.timeScale = 0f; 
+        Time.timeScale = 0f;
         isPaused = true;
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        if (astronautMovement != null) astronautMovement.enabled = false;
     }
 
     public void GoToMainMenu()

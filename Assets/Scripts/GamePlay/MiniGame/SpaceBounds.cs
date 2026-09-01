@@ -1,20 +1,32 @@
 using UnityEngine;
-using UnityEngine.UI; 
+using UnityEngine.UI;
 
 public class SpaceBounds : MonoBehaviour
 {
     [Header("Центр та налаштування")]
     public Transform centerPoint;
-    public float maxDistance = 50f;
+    public float baseMaxDistance = 50f;
+    public float upgradeDistanceStep = 20f;
     public float slowDownZone = 5f;
 
+    [Header("Візуальна куля")]
+    public Color sphereColor = new Color(0f, 0.6f, 1f, 0.08f);
+
     [Header("Ефект меж (Віньєтка)")]
-    public Image vignetteImage;          
-    public Color vignetteColor = new Color(0f, 0.5f, 1f); 
+    public Image vignetteImage;
+    public Color vignetteColor = new Color(0f, 0.5f, 1f);
     public float maxVignetteAlpha = 0.8f;
 
     [Header("Посилання")]
     public AstronautMovement astronautMovement;
+
+    private GameObject boundarySphere;
+    private Material sphereMaterial;
+    private int lastZoneLevel = -1;
+
+    private float CurrentMaxDistance => GameManager.Instance != null
+        ? baseMaxDistance + ((GameManager.Instance.zoneLevel - 1) * upgradeDistanceStep)
+        : baseMaxDistance;
 
     void Start()
     {
@@ -38,10 +50,25 @@ public class SpaceBounds : MonoBehaviour
             c.a = 0f;
             vignetteImage.color = c;
         }
+
+        CreateBoundarySphere();
     }
 
     void Update()
     {
+        if (centerPoint != null && boundarySphere != null)
+        {
+            boundarySphere.transform.position = centerPoint.position;
+
+            int currentLevel = GameManager.Instance != null ? GameManager.Instance.zoneLevel : 1;
+            if (currentLevel != lastZoneLevel)
+            {
+                lastZoneLevel = currentLevel;
+                float diameter = CurrentMaxDistance * 2f;
+                boundarySphere.transform.localScale = new Vector3(diameter, diameter, diameter);
+            }
+        }
+
         if (astronautMovement == null || !astronautMovement.isZeroGravity) return;
         if (centerPoint == null) return;
 
@@ -50,7 +77,9 @@ public class SpaceBounds : MonoBehaviour
 
         UpdateVignette(distance);
 
-        if (distance >= maxDistance - slowDownZone)
+        float maxDist = CurrentMaxDistance;
+
+        if (distance >= maxDist - slowDownZone)
         {
             Vector3 outwardVelocity = Vector3.Project(astronautMovement.velocity, direction.normalized);
             if (Vector3.Dot(outwardVelocity, direction.normalized) > 0)
@@ -58,18 +87,44 @@ public class SpaceBounds : MonoBehaviour
                 astronautMovement.velocity -= outwardVelocity;
             }
 
-            if (distance > maxDistance)
+            if (distance > maxDist)
             {
-                transform.position = centerPoint.position + direction.normalized * maxDistance;
+                transform.position = centerPoint.position + direction.normalized * maxDist;
             }
         }
+    }
+
+    private void CreateBoundarySphere()
+    {
+        boundarySphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        boundarySphere.name = "VisualSpaceBoundarySphere";
+
+        Collider col = boundarySphere.GetComponent<Collider>();
+        if (col != null) Destroy(col);
+
+        Shader shader = Shader.Find("Sprites/Default");
+        sphereMaterial = new Material(shader);
+
+        Color finalColor = new Color(sphereColor.r, sphereColor.g, sphereColor.b, 0.08f);
+        sphereMaterial.color = finalColor;
+
+        MeshRenderer renderer = boundarySphere.GetComponent<MeshRenderer>();
+        if (renderer != null)
+        {
+            renderer.material = sphereMaterial;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+        }
+
+        float diameter = CurrentMaxDistance * 2f;
+        boundarySphere.transform.localScale = new Vector3(diameter, diameter, diameter);
     }
 
     private void UpdateVignette(float distance)
     {
         if (vignetteImage == null) return;
 
-        float startZone = maxDistance - slowDownZone;
+        float startZone = CurrentMaxDistance - slowDownZone;
 
         if (distance >= startZone)
         {
@@ -87,6 +142,14 @@ public class SpaceBounds : MonoBehaviour
                 c.a = 0f;
                 vignetteImage.color = c;
             }
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (sphereMaterial != null)
+        {
+            Destroy(sphereMaterial);
         }
     }
 }
