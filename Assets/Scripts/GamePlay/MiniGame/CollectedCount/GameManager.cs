@@ -18,6 +18,14 @@ public class GameManager : MonoBehaviour
     [Header("Налаштування цін")]
     public int baseUpgradeCost = 200;
 
+    [Header("Система трофеїв (Статуї на сцені)")]
+    [Tooltip("Масив статуй, які вже розставлені на сцені (вони мають бути вимкнені на старті)")]
+    public GameObject[] statues;
+    [Tooltip("Скільки тварин треба врятувати для відкриття однієї статуї")]
+    public int animalsPerStatue = 5;
+
+    private int unlockedStatuesCount = 0;
+
     [Header("Пауза")]
     public GameObject pauseMenuUI;
     public bool isPaused = false;
@@ -41,6 +49,14 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
+
+        if (statues != null)
+        {
+            foreach (var statue in statues)
+            {
+                if (statue != null) statue.SetActive(false);
+            }
+        }
     }
 
     void Update()
@@ -96,6 +112,18 @@ public class GameManager : MonoBehaviour
     {
         savedAnimalsCount++;
         Debug.Log($"Saved animals: {savedAnimalsCount}");
+
+        int targetUnlocked = savedAnimalsCount / animalsPerStatue;
+
+        while (unlockedStatuesCount < targetUnlocked && statues != null && unlockedStatuesCount < statues.Length)
+        {
+            if (statues[unlockedStatuesCount] != null)
+            {
+                statues[unlockedStatuesCount].SetActive(true);
+                Debug.Log($"The statue has been restored №{unlockedStatuesCount + 1} at scene!");
+            }
+            unlockedStatuesCount++;
+        }
     }
 
     public int GetCost(int level) => level * baseUpgradeCost;
