@@ -8640,8 +8640,8 @@ MonoBehaviour:
   baseSpawnInterval: 2
   intervalReductionPerLevel: 0.2
   minAllowedInterval: 0.5
-  baseNormalChance: 60
-  baseValuableChance: 30
+  baseNormalChance: 50
+  baseValuableChance: 40
   baseRareChance: 10
   luckBonusMultiplier: 1.5
   maxValuableChanceLimit: 60
